@@ -138,7 +138,7 @@ class YellowDepthDetector(Node):
                         if count <= 3 and count >= 2:
                             corner_list.append(kp)
                     
-                                
+                    print("Corners: ", len(corner_list))
                     for corner in corner_list:
                         cv2.circle(frame, corner, 8, (255, 127, 127), 3)
 
