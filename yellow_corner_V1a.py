@@ -16,7 +16,7 @@ class YellowDepthDetector(Node):
         self.threshold = 20  # Minimum size of object (pixels)
         self.cx=0.00
         self.cy=0.00
-        self.check = False;
+        self.check = False
         self.rgb_sub = self.create_subscription(Image,'/zed/zed_node/right/image_rect_color',self.rgb_callback,10)
         self.depth_sub = self.create_subscription(Image,'/zed/zed_node/depth/depth_registered',self.depth_callback,10)
         self.get_logger().info("Subscribed to RGB and Depth topics.")
@@ -41,11 +41,11 @@ class YellowDepthDetector(Node):
     
     
     def rgb_callback(self, msg):
-        try:
-            frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
-        except Exception as e:
-            self.get_logger().error(f"RGB image conversion failed: {e}")
+        frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
             
+        if frame is None:
+            return
+    
         hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
         lower_yellow = np.array([20, 100, 100])
         upper_yellow = np.array([40, 255, 255])
@@ -59,6 +59,7 @@ class YellowDepthDetector(Node):
         if self.depth_image is None:
             self.get_logger().warn("Depth image not yet received")
             return
+        
         if len(contours)!=0:
             areas = [cv2.contourArea(c) for c in contours]
             max_index = np.argmax(areas)
@@ -99,9 +100,8 @@ class YellowDepthDetector(Node):
                         cv2.rectangle(frame, (xk - 3, yk - 3), (xk + 3, yk + 3), (0, 255, 0), 1)
                     # Detect best 90-degree corner from triplets
                     best_corner = None
+                    corner_list = []
                     for i, j, k in permutations(range(len(yellow_kps)), 3):
-                        if i == j or j == k or i == k:
-                            continue
                         pt1 = yellow_kps[i].pt
                         pt2 = yellow_kps[j].pt
                         pt3 = yellow_kps[k].pt
@@ -109,6 +109,7 @@ class YellowDepthDetector(Node):
                         if 85 <= angle <= 100:
                             best_corner = (int(pt2[0]), int(pt2[1]), angle)
                             corner_list+=[best_corner]
+
                     if corner_list:
                         best_corner_tuple=min(corner_list, key=lambda x: abs(x[2] - 90.0))
                         best_corner=(best_corner_tuple[0], best_corner_tuple[1])
@@ -117,6 +118,8 @@ class YellowDepthDetector(Node):
                         cv2.putText(frame, f"corner z:{corner_z}", (best_corner[0] + 10, best_corner[1]),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 2)
                         # label = f"z: {corner_z}"
+                        
+                    # Center point visualisation    
                     cv2.circle(frame,(int(self.cx), int(self.cy)), 8, (255, 0, 255), 3)
         
         cv2.imshow("frame", frame)
@@ -125,7 +128,6 @@ class YellowDepthDetector(Node):
         cv2.waitKey(1)
 
 def main(args=None):
-
     rclpy.init(args=args)
     node = YellowDepthDetector()
     try:
