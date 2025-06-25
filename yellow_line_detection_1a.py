@@ -1,3 +1,12 @@
+"""
+
+This program reads the RGB and Depth Map from Zed Camera.
+It publishes to two ros2 topics: '/yellow_line/is_yellow_line' and 'yellow_line/yellow_line_distance'.
+is_yellow_line: bool => Is a yellow line detected?
+yellow_line_distance: float => Distance of yellow line from depth map
+
+"""
+
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Float32, Bool
