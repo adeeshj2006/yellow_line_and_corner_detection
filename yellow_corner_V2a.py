@@ -119,6 +119,7 @@ class YellowDepthDetector(Node):
                     # Here is the one using 8 segments
                     count = 0
                     for kp in yellow_kps:
+                        # Point coords
                         xk, yk = int(kp.pt[0]), int(kp.pt[1])
 
                         steps = [
@@ -135,7 +136,7 @@ class YellowDepthDetector(Node):
                         for step in steps:
                             count += mask[int(step[1]), int(step[0])]
 
-                        if count == 2 or count == 3:
+                        if count <= 4:
                             corner_list.append(kp)
 
                         count = 0
