@@ -111,10 +111,14 @@ class YellowLineDepthDetector(Node):
                 x,y,w,h = cv2.boundingRect(c)
                 if 1.0*w/h > self.bounding_box_ratio:
                     all_possible_contours.append(c)
+            if len(all_possible_contours) !=0:
+                areas = [cv2.contourArea(c) for c in all_possible_contours]
+                max_index = np.argmax(areas)
 
-            areas = [cv2.contourArea(c) for c in all_possible_contours]
-            max_index = np.argmax(areas)
-
+            else:
+                areas = []
+                max_index = 0
+            
             largest_contour = contours[max_index]
 
             x, y, w, h = cv2.boundingRect(largest_contour)
@@ -124,7 +128,7 @@ class YellowLineDepthDetector(Node):
                 center_x, center_y = x + w // 2, y + h // 2
 
                 is_yellow_line_detected = True
-                yellow_line_dist = self.depth_image[center_y,center_x]
+                yellow_line_dist = float(self.depth_image[center_y,center_x])
 
                 if (math.isnan(yellow_line_dist) or math.isinf(yellow_line_dist)):
 
@@ -154,7 +158,7 @@ class YellowLineDepthDetector(Node):
         # Publishing Yellow Line Distnace
         yellow_line_dist_msg = Float32()
         yellow_line_dist_msg.data = yellow_line_dist
-        self.is_yellow_line_detected_pub.publish(is_yellow_line_detected)
+        self.is_yellow_line_detected_pub.publish(yellow_line_dist_msg)
         self.yellow_line_distance_pub.publish(yellow_line_dist_msg)
         self.get_logger().info(f'Dist: {yellow_line_dist}')
 

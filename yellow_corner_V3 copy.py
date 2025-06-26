@@ -127,7 +127,7 @@ class YellowDepthDetector(Node):
                         ]
 
                         for step in steps:
-                            count += int(mask[int(step[1]), int(step[0])] / 255)          # Counts the number of segments which are within the mask
+                            count += mask[int(step[1]), int(step[0])]           # Counts the number of segments which are within the mask
                         
                         print (f'Count for kp_{i}: {count}')
                         if count <= 4:
