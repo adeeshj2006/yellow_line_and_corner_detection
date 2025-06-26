@@ -125,8 +125,8 @@ class YellowDepthDetector(Node):
                         cv2.circle(frame, (int(corner.pt[0]), int(corner.pt[1])), 15, (255, 0, 0), 5)
 
                     if corner_list:
-                        best_corner_tuple=min(corner_list, key=lambda x: abs(x[2] - 90.0))
-                        best_corner=(int(best_corner_tuple[0]), int(best_corner_tuple[1]))
+                        # best_corner_tuple=min(corner_list, key=lambda x: abs(x[2] - 90.0))
+                        best_corner=(int(corner_list.pt[0]), int(corner_list.pt[1])) ## This was the error
                         cv2.circle(frame, best_corner, 8, (255, 0, 255), 1)
                         corner_z=self.depth_image[best_corner[1],best_corner[0]]
                         cv2.putText(frame, f"corner z:{corner_z}", (best_corner[0] + 10, best_corner[1]),
