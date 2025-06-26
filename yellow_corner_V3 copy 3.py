@@ -127,10 +127,10 @@ class YellowDepthDetector(Node):
                         ]
 
                         for step in steps:
-                            count += mask[int(step[1]), int(step[0])]           # Counts the number of segments which are within the mask
+                            count += int(mask[int(step[1]), int(step[0])] / 255)          # Counts the number of segments which are within the mask
                         
                         print (f'Count for kp_{i}: {count}')
-                        if count <= 4 and xk <= int(msg.width/2):
+                        if count <= 4:
                             corner_list.append(kp)
 
                         count = 0
@@ -146,6 +146,7 @@ class YellowDepthDetector(Node):
                         cv2.circle(frame, best_corner, 8, (255, 0, 255), 1)
                         corner_z=self.depth_image[best_corner[1],best_corner[0]]
                         cv2.putText(frame, f"corner z:{corner_z}", (best_corner[0] + 10, best_corner[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 2)
+                        # pass
                     # Center point visualisation    
                     cv2.circle(frame,(int(self.cx), int(self.cy)), 8, (255, 0, 255), 3)
                 

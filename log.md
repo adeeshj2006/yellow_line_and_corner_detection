@@ -25,3 +25,16 @@
     - yellow_corner_V3.py
         - Added some debugging features
         - Will remove after testing
+
+4.  Added all files
+    adeeshj2006
+    - Added some extra files
+    - Check and remove redundent files if free
+    - Added combined_code file and corner_V4
+
+5.  Added final combined code
+    adeeshj2006
+    - Added final combined code
+    - Added some comments
+    - Checked logic flow
+    - Understood code fully
