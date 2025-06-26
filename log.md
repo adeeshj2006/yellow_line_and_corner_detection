@@ -19,3 +19,9 @@
     - yellow_corner_V3.py
         - Added comments and slight modifications to make it more readable
         - No change in logic
+
+3.  Debugging features
+    adeeshj2006
+    - yellow_corner_V3.py
+        - Added some debugging features
+        - Will remove after testing

@@ -105,10 +105,15 @@ class YellowDepthDetector(Node):
 
                     # Main 8-segment code
                     count = 0
+                    
+                    i=0
                     for kp in yellow_kps:
+                        i += 1
                         # Point coords
                         xk, yk = int(kp.pt[0]), int(kp.pt[1])
                         cv2.circle(frame, (xk, yk), 2, (100,100,100), 2)
+                        cv2.rectangle(frame, (xk + self.step, yk + self.step), (xk - self.step, yk - self.step), (0,0,255), 2)
+                        cv2.putText(frame, f'kp_{i}', (xk, yk), 1, 1, (0,0,0), 1)
 
                         steps = [
                             (xk + self.step, yk),
@@ -123,13 +128,14 @@ class YellowDepthDetector(Node):
 
                         for step in steps:
                             count += mask[int(step[1]), int(step[0])]           # Counts the number of segments which are within the mask
-
+                        
+                        print (f'Count for kp_{i}: {count}')
                         if count <= 4:
                             corner_list.append(kp)
 
                         count = 0
                     
-                    print("Corners: ", len(corner_list))
+                    # print("Corners: ", len(corner_list))
                     
                     for corner in corner_list:
                         cv2.circle(frame, (int(corner.pt[0]), int(corner.pt[1])), 15, (255, 0, 0), 5)
