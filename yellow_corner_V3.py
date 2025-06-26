@@ -23,22 +23,20 @@ class YellowDepthDetector(Node):
         self.step = 3
         
 
-
-
     def depth_callback(self, msg):
         self.depth_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='passthrough')
 
 
-    def angle_between(self, p1, p2, p3):
-        a = np.array(p1) - np.array(p2)
-        b = np.array(p3) - np.array(p2)
-        dot = np.dot(a, b)
-        norm = np.linalg.norm(a) * np.linalg.norm(b)
-        if norm == 0:
-            return 0
-        cos_angle = np.clip(dot / norm, -1.0, 1.0)
-        angle = np.degrees(np.arccos(cos_angle))
-        return min(angle, 360 - angle)
+    # def angle_between(self, p1, p2, p3):
+    #     a = np.array(p1) - np.array(p2)
+    #     b = np.array(p3) - np.array(p2)
+    #     dot = np.dot(a, b)
+    #     norm = np.linalg.norm(a) * np.linalg.norm(b)
+    #     if norm == 0:
+    #         return 0
+    #     cos_angle = np.clip(dot / norm, -1.0, 1.0)
+    #     angle = np.degrees(np.arccos(cos_angle))
+    #     return min(angle, 360 - angle)
     
     
     def rgb_callback(self, msg):
@@ -126,7 +124,7 @@ class YellowDepthDetector(Node):
 
                     if corner_list:
                         # best_corner_tuple=min(corner_list, key=lambda x: abs(x[2] - 90.0))
-                        best_corner=(int(corner_list.pt[0]), int(corner_list.pt[1])) ## This was the error
+                        best_corner=(int(corner_list[0].pt[0]), int(corner_list[0].pt[1])) ## This was the error
                         cv2.circle(frame, best_corner, 8, (255, 0, 255), 1)
                         corner_z=self.depth_image[best_corner[1],best_corner[0]]
                         cv2.putText(frame, f"corner z:{corner_z}", (best_corner[0] + 10, best_corner[1]),
