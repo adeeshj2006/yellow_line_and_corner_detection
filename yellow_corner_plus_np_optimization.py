@@ -1,29 +1,37 @@
 """
 
+This file has the 8 segment code
+
+The following are marked on the frame:
+
+Name                Color           Radius          Thickness
+All keypoints:      (100,100,100)   2               2
+
 """
 
 import rclpy
 from rclpy.node import Node
-from std_msgs.msg import Float32, Int32
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
+from std_msgs.msg import Float32, Bool
 from rclpy.qos import qos_profile_sensor_data
 
-class LineAndCOrnerPublisher(Node):
+
+class YellowDepthDetector(Node):
     def __init__(self):
-        super().__init__('Line_and_corner_detector')
+        super().__init__('yellow_depth_detector')
 
         # Initialisation
         self.bridge = CvBridge()
         self.depth_image = None
        
         # Parameters
-        self.threshold:int = 20     # Minimum size of object (pixels)
-        self.step:int = 3           # pixel step for 8-segment
-        self.cx:float=0.00
-        self.cy:float=0.00
+        self.threshold = 20     # Minimum size of object (pixels)
+        self.step = 3           # pixel step for 8-segment
+        self.cx=0.00
+        self.cy=0.00
        
         # Subscriptions
         self.rgb_sub = self.create_subscription(Image,'/zed/zed_node/right/image_rect_color',self.rgb_callback, qos_profile_sensor_data)
@@ -31,7 +39,7 @@ class LineAndCOrnerPublisher(Node):
         self.get_logger().info("Subscribed to RGB and Depth topics.")
 
         # Publishers
-        self.is_corner_detected_pub = self.create_publisher(Int32,'/yellow_line/is_corner', 10)
+        self.is_corner_detected_pub = self.create_publisher(Bool,'/yellow_line/is_corner', 10)
         self.corner_distance_pub = self.create_publisher(Float32,'/yellow_line/corner_distance', 10)
 
         # ORB, which is an algorithm that detects key, or notable features in controus
@@ -215,7 +223,7 @@ class LineAndCOrnerPublisher(Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = LineAndCOrnerPublisher()
+    node = YellowDepthDetector()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
