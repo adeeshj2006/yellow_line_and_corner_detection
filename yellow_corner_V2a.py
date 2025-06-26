@@ -135,16 +135,18 @@ class YellowDepthDetector(Node):
                         for step in steps:
                             count += mask[int(step[1]), int(step[0])]
 
-                        if count <= 3 and count >= 2:
+                        if count == 2 or count == 3:
                             corner_list.append(kp)
+
+                        count = 0
                     
                     print("Corners: ", len(corner_list))
                     for corner in corner_list:
-                        cv2.circle(frame, corner, 8, (255, 127, 127), 3)
+                        cv2.circle(frame, (int(corner.pt[0]), int(corner.pt[1])), 8, (255, 127, 127), 3)
 
                     if corner_list:
                         best_corner_tuple=min(corner_list, key=lambda x: abs(x[2] - 90.0))
-                        best_corner=(best_corner_tuple[0], best_corner_tuple[1])
+                        best_corner=(int(best_corner_tuple[0]), int(best_corner_tuple[1]))
                         cv2.circle(frame, best_corner, 8, (255, 0, 255), 3)
                         corner_z=self.depth_image[best_corner[1],best_corner[0]]
                         cv2.putText(frame, f"corner z:{corner_z}", (best_corner[0] + 10, best_corner[1]),
