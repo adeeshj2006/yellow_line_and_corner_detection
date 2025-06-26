@@ -9,35 +9,32 @@ import numpy as np
 class YellowDepthDetector(Node):
     def __init__(self):
         super().__init__('yellow_depth_detector')
+
+        # Initialisation
         self.bridge = CvBridge()
         self.depth_image = None
+        
+        # 
         self.threshold = 20  # Minimum size of object (pixels)
+        self.step = 3
         self.cx=0.00
         self.cy=0.00
+        
         self.check = False
+        
         self.rgb_sub = self.create_subscription(Image,'/zed/zed_node/right/image_rect_color',self.rgb_callback,10)
         self.depth_sub = self.create_subscription(Image,'/zed/zed_node/depth/depth_registered',self.depth_callback,10)
+        
         self.get_logger().info("Subscribed to RGB and Depth topics.")
+        
         self.orb = cv2.ORB_create(nfeatures=1000)
+        
         self.get_logger().info("Yellow L-corner & Depth node initialized.")
-        self.step = 3
+        
         
 
     def depth_callback(self, msg):
         self.depth_image = self.bridge.imgmsg_to_cv2(msg, desired_encoding='passthrough')
-
-
-    # def angle_between(self, p1, p2, p3):
-    #     a = np.array(p1) - np.array(p2)
-    #     b = np.array(p3) - np.array(p2)
-    #     dot = np.dot(a, b)
-    #     norm = np.linalg.norm(a) * np.linalg.norm(b)
-    #     if norm == 0:
-    #         return 0
-    #     cos_angle = np.clip(dot / norm, -1.0, 1.0)
-    #     angle = np.degrees(np.arccos(cos_angle))
-    #     return min(angle, 360 - angle)
-    
     
     def rgb_callback(self, msg):
         frame = self.bridge.imgmsg_to_cv2(msg, desired_encoding='bgr8')
@@ -79,7 +76,7 @@ class YellowDepthDetector(Node):
                     self.check = True
                 else:
                     self.check = False
-
+                cv2.circle(frame,(int(self.cx), int(self.cy)), 8, (255, 0, 0), 3)
                 if (self.check):
                     yellow_region = cv2.bitwise_and(frame, frame, mask=largest_mask)
                     gray_yellow = cv2.cvtColor(yellow_region, cv2.COLOR_BGR2GRAY)
@@ -123,15 +120,15 @@ class YellowDepthDetector(Node):
                         cv2.circle(frame, (int(corner.pt[0]), int(corner.pt[1])), 15, (255, 0, 0), 5)
 
                     if corner_list:
-                        # best_corner_tuple=min(corner_list, key=lambda x: abs(x[2] - 90.0))
-                        best_corner=(int(corner_list[0].pt[0]), int(corner_list[0].pt[1])) ## This was the error
-                        cv2.circle(frame, best_corner, 8, (255, 0, 255), 1)
-                        corner_z=self.depth_image[best_corner[1],best_corner[0]]
-                        cv2.putText(frame, f"corner z:{corner_z}", (best_corner[0] + 10, best_corner[1]),
-                                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 2)
-                        
+                        # # best_corner_tuple=min(corner_list, key=lambda x: abs(x[2] - 90.0))
+                        # best_corner=(int(corner_list[0].pt[0]), int(corner_list[0].pt[1])) ## This was the error
+                        # cv2.circle(frame, best_corner, 8, (255, 0, 255), 1)
+                        # corner_z=self.depth_image[best_corner[1],best_corner[0]]
+                        # cv2.putText(frame, f"corner z:{corner_z}", (best_corner[0] + 10, best_corner[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 2)
+                        pass
                     # Center point visualisation    
                     cv2.circle(frame,(int(self.cx), int(self.cy)), 8, (255, 0, 255), 3)
+                
         
         cv2.imshow("frame", frame)
         cv2.imshow("mask2", mask2)
