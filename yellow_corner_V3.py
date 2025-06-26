@@ -4,8 +4,6 @@ from sensor_msgs.msg import Image
 from cv_bridge import CvBridge
 import cv2
 import numpy as np
-from rclpy.qos import qos_profile_sensor_data
-from itertools import permutations
 
 
 class YellowDepthDetector(Node):
@@ -75,12 +73,7 @@ class YellowDepthDetector(Node):
                 label = f"z:{Z}"
                 cv2.putText(frame, label, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX,
                             0.6, (0, 255, 255), 2, cv2.LINE_AA)
-                # if (Z>=3.0):
-                #     pass
-                #     # print("z:",Z)
-                # else:
-                #     pass
-                #     # print("stop")
+
                 largest_mask = np.zeros_like(mask)
                 cv2.drawContours(largest_mask, [cnt], -1, 255, thickness=cv2.FILLED)
                 # bool for corner detection --> self.check
@@ -97,24 +90,9 @@ class YellowDepthDetector(Node):
                     enhanced = clahe.apply(gray_yellow)
                     blurred = cv2.GaussianBlur(enhanced, (5, 5), 0)
                     yellow_kps = self.orb.detect(blurred, mask=largest_mask)  #initially --> keypoints = self.orb.detect(blurred, None)
-                    #yellow_kps = [kp for kp in keypoints if largest_mask[int(kp.pt[1]), int(kp.pt[0])] > 0]
-                    # for kp in yellow_kps:
-                    #     xk, yk = int(kp.pt[0]), int(kp.pt[1])
-                    #     cv2.rectangle(frame, (xk - 3, yk - 3), (xk + 3, yk + 3), (0, 255, 0), 1)
-                    # Detect best 90-degree corner from triplets
+                    
                     best_corner = None
                     corner_list = []
-
-                    # This is the current corner detection, by finding the angle between triplets
-                    ### for i, j, k in permutations(range(len(yellow_kps)), 3):
-                    ###     pt1 = yellow_kps[i].pt
-                    ###     pt2 = yellow_kps[j].pt
-                    ###     pt3 = yellow_kps[k].pt
-                    ###     angle = self.angle_between(pt1, pt2, pt3)
-                    ###     if 85 <= angle <= 100:
-                    ###         best_corner = (int(pt2[0]), int(pt2[1]), angle)
-                    ###         corner_list += [best_corner]
-
 
                     # Here is the one using 8 segments
                     count = 0
@@ -142,17 +120,17 @@ class YellowDepthDetector(Node):
                         count = 0
                     
                     print("Corners: ", len(corner_list))
+                    
                     for corner in corner_list:
-                        cv2.circle(frame, (int(corner.pt[0]), int(corner.pt[1])), 8, (255, 127, 127), 3)
+                        cv2.circle(frame, (int(corner.pt[0]), int(corner.pt[1])), 15, (255, 0, 0), 5)
 
                     if corner_list:
                         best_corner_tuple=min(corner_list, key=lambda x: abs(x[2] - 90.0))
                         best_corner=(int(best_corner_tuple[0]), int(best_corner_tuple[1]))
-                        cv2.circle(frame, best_corner, 8, (255, 0, 255), 3)
+                        cv2.circle(frame, best_corner, 8, (255, 0, 255), 1)
                         corner_z=self.depth_image[best_corner[1],best_corner[0]]
                         cv2.putText(frame, f"corner z:{corner_z}", (best_corner[0] + 10, best_corner[1]),
                                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 2)
-                        # label = f"z: {corner_z}"
                         
                     # Center point visualisation    
                     cv2.circle(frame,(int(self.cx), int(self.cy)), 8, (255, 0, 255), 3)
