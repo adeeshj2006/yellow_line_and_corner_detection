@@ -159,7 +159,7 @@ class YellowLineDepthDetector(Node):
                 # print("Distance: ",self.yellow_line_dist)
                 cv2.putText(frame, label, (x,y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,255), 2, cv2.LINE_AA)
             
-                #mojority of corner detection start here
+                #majority of corner detection start here
                 
                 largest_mask = np.zeros_like(yellow_mask)
                 cv2.drawContours(largest_mask, [largest_contour], -1, 255, thickness=cv2.FILLED)

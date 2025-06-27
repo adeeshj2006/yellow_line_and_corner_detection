@@ -187,7 +187,7 @@ class YellowDepthDetector(Node):
                         cv2.circle(frame, tuple(corner), 6, (255, 0, 0), 5)
 
                     # Circle for the corner
-                    if corner_list.size:
+                    if len(corner_list):
 
                         # best_corner_tuple=min(corner_list, key=lambda x: abs(x[2] - 90.0))
                         best_corner = tuple(corner_list[0])
