@@ -125,6 +125,7 @@ class YellowLineDepthDetector(Node):
                 yellow_line_dist_msg.data = 101.00
                 self.yellow_line_distance_pub.publish(yellow_line_dist_msg)
                 self.get_logger().info(f'Dist: {yellow_line_dist}')
+                return
 
 
 
